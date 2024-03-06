@@ -1,0 +1,30 @@
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+volumes:
+  ollama:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+  ollama:
+    build:
+      context: ./ollama
+    volumes:
+      - ${CODE_PATH}/ollama:/var/www/ollama
+    ports:
+      - ${OLLAMA_PORT}:${OLLAMA_PORT}
+    networks:
+      - backend
+    container_name: ollama
+
+  chatbot:
+    image: ghcr.io/ivanfioravanti/chatbot-ollama:main
+    ports:
+      - "${CHATBOT_PORT}:3000"
+    depends_on:
+      - ollama
+    networks:
+      - frontend
+      - backend
